@@ -17,6 +17,7 @@ limitations under the License.
 package docker
 
 import (
+	"os"
 	"strings"
 	"sync"
 
@@ -86,6 +87,7 @@ func (a *Keychain) newAuthenticator(res authn.Resource) authn.Authenticator {
 	// 1. Use google.NewGcloudAuthenticator() authenticator if `gcloud` is configured
 	cfg, err := config.Load(a.configDir)
 	if err == nil && cfg.CredentialHelpers[registry] == "gcloud" {
+		os.Setenv("CLOUDSDK_COMPONENT_MANAGER_DISABLE_UPDATE_CHECK", "1")
 		if auth, err := google.NewGcloudAuthenticator(); err == nil {
 			return auth
 		}
@@ -99,6 +101,7 @@ func (a *Keychain) newAuthenticator(res authn.Resource) authn.Authenticator {
 
 	// 3. Try gcloud for *.gcr.io
 	if registry == "gcr.io" || strings.HasSuffix(registry, ".gcr.io") {
+		os.Setenv("CLOUDSDK_COMPONENT_MANAGER_DISABLE_UPDATE_CHECK", "1")
 		if auth, err := google.NewGcloudAuthenticator(); err == nil {
 			return auth
 		}

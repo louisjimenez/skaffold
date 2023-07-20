@@ -21,6 +21,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"os/exec"
 	"sync"
 	"time"
@@ -71,6 +72,7 @@ type tokenSource struct {
 }
 
 func (ts tokenSource) Token() (*oauth2.Token, error) {
+	os.Setenv("CLOUDSDK_COMPONENT_MANAGER_DISABLE_UPDATE_CHECK", "1")
 	// the command return a json object containing id_token, access_token, token_expiry
 	cmd := exec.Command("gcloud", "auth", "print-identity-token", "--format=json")
 	var body bytes.Buffer
